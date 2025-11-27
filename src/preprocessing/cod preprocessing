@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+import cv2
+import os
+
+# CONFIGURARE
+INPUT_FOLDER = 'data/raw'        # De unde luam pozele
+OUTPUT_FOLDER = 'data/processed' # Unde le salvam
+IMG_SIZE = (224, 224)            # Dimensiunea standard
+
+def proceseaza_folder(tip_set):
+    """
+    Parcurge folderul (train sau test) si proceseaza imaginile.
+    """
+    path_set = os.path.join(INPUT_FOLDER, tip_set)
+    if not os.path.exists(path_set):
+        print(f"Eroare: Nu gasesc folderul {path_set}")
+        print("Verifica daca ai creat folderul 'data/raw' si ai mutat 'train' si 'test' in el!")
+        return
+
+    # Parcurgem cele doua clase: 'corect' si 'gresit'
+    for clasa in ['corect', 'gresit']:
+        path_clasa = os.path.join(path_set, clasa)
+        
+        # Cream folderul de destinatie
+        path_destinatie = os.path.join(OUTPUT_FOLDER, tip_set, clasa)
+        os.makedirs(path_destinatie, exist_ok=True)
+
+        print(f"--- Procesez: {tip_set}/{clasa} ---")
+        
+        if not os.path.exists(path_clasa):
+            print(f"ATENTIE: Nu gasesc folderul {path_clasa}. Trec mai departe.")
+            continue
+
+        counter = 0
+        for img_name in os.listdir(path_clasa):
+            try:
+                img_path = os.path.join(path_clasa, img_name)
+                img = cv2.imread(img_path)
+
+                if img is None:
+                    continue
+
+                # Redimensionare
+                img_resized = cv2.resize(img, IMG_SIZE)
+
+                # Salvare
+                new_filename = f"{clasa}_{counter}.jpg" 
+                save_path = os.path.join(path_destinatie, new_filename)
+                
+                cv2.imwrite(save_path, img_resized)
+                counter += 1
+
+            except Exception as e:
+                print(f"Eroare: {e}")
+
+        print(f"Finalizat {clasa}: {counter} imagini.")
+
+if __name__ == "__main__":
+    print("Start...")
+    proceseaza_folder('train')
+    proceseaza_folder('test')
+    print("Gata!")
