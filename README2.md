@@ -1,7 +1,4 @@
-Am inteles. Trecem proiectul pe monitorizarea exercitiului Plank (fitness) si actualizam sectiunea de date pentru a reflecta faptul ca ai folosit o baza de date existenta (de exemplu de pe Kaggle sau alt site de specialitate), dar ai filtrat-o/prelucrat-o tu.
 
-Iata fisierul README_Etapa4_Arhitectura_SIA.md rescris complet pentru acest scenariu, fara diacritice, gata de Copy-Paste.
-📘 README – Etapa 4: Arhitectura Completa a Aplicatiei SIA
 
 Disciplina: Retele Neuronale Institutie: POLITEHNICA Bucuresti – FIIR Student: [Numele Tau] Link Repository GitHub: [Link-ul tau] Data: [Data curenta]
 Scopul Etapei 4
