@@ -1,0 +1,92 @@
+Scopul Etapei 4
+
+In aceasta etapa am construit scheletul functional al aplicatiei. Practic, am facut "instalatia" prin care circula datele: de la camera web, prin retea, pana la afisarea pe ecran.
+
+Sistemul este functional cap-coada (end-to-end): porneste fara erori, citeste imagini, le trece prin structura retelei neuronale si afiseaza un rezultat, chiar daca modelul nu este inca antrenat sa dea raspunsuri perfecte momentan.
+1. Tabelul Nevoie Reala -> Solutie SIA
+
+Am legat problema practica de modulele de cod pe care le-am scris:
+Nevoie reala concreta	Cum o rezolva SIA-ul meu	Modul software responsabil
+Reducerea accidentarilor la spate in randul muncitorilor	Monitorizeaza video unghiul spatelui si da alerta vizuala instanta (rosu pe ecran) daca postura e gresita.	Modul Achizitie (Camera) + UI (Afisare)
+Eliminarea subiectivismului uman in evaluare	Clasifica automat postura in "Corect/Incorect" folosind un algoritm obiectiv, eliminand parerea subiectiva a omului.	Modul RN (Reteaua Neuronala)
+2. Contributia Originala la Setul de Date (Regula de 40%)
+
+Ca sa am un proiect serios, nu m-am bazat doar pe poze descarcate de pe Google. Am generat propriile date pentru a simula conditiile reale de utilizare.
+Detalii contributie:
+
+Total observatii finale: [Ex: 1000 imagini] (dupa ce am unit tot) Observatii originale: [Ex: 450 imagini] (adica [45%])
+
+Tipul contributiei: [ ] Date generate prin simulare fizica [x] Date achizitionate cu senzori proprii (Camera Web/Telefon) [ ] Etichetare manuala [ ] Date sintetice
+
+Descriere: Am realizat o sesiune de captura foto/video folosind [webcam-ul laptopului / telefonul]. M-am filmat pe mine si [pe un coleg] simuland ridicarea unor greutati. Am avut grija sa avem haine diferite si fundaluri diferite pentru diversitate. Am inregistrat atat miscari corecte (spate drept, genunchi flexati), cat si incorecte (spate curbat, picioare drepte). Ulterior, am selectat cele mai clare cadre si le-am pus in folderul data/generated.
+
+Locatia datelor: data/raw/train/ (folderele cu numele meu)
+3. Diagrama State Machine (Logica Sistemului)
+
+Am salvat diagrama in: docs/state_machine.png
+Justificarea State Machine-ului ales:
+
+Am ales o arhitectura de tip Monitorizare Continua (Loop), pentru ca proiectul meu trebuie sa verifice postura muncitorului in timp real, cadru cu cadru, nu doar o singura data.
+
+Starile principale sunt:
+
+    IDLE: Sistemul asteapta pornirea camerei.
+
+    CAPTURE & PROCESS: Se preia imaginea de la webcam si se redimensioneaza la 224x224 (preprocesare).
+
+    INFERENCE: Reteaua neuronala primeste poza si decide (0 sau 1).
+
+    ALERT: Daca rezultatul e "Incorect", se afiseaza alerta pe ecran si se salveaza in log.
+
+Am inclus starea de ERROR pentru situatiile cand camera se deconecteaza sau lumina e prea slaba si nu se detecteaza nicio persoana in cadru.
+4. Scheletul Complet al celor 3 Module
+
+Toate cele 3 module sunt scrise in Python si functioneaza impreuna.
+Modul 1: Data Logging / Acquisition
+
+Locatie: src/data_acquisition/capture.py Acest script se ocupa de pornirea camerei web si salvarea cadrelor. L-am folosit pentru a genera dataset-ul propriu. Ruleaza fara erori si salveaza imaginile direct in structura de foldere necesara (corect/gresit).
+Modul 2: Neural Network Module
+
+Locatie: src/neural_network/model.py Aici am definit arhitectura retelei CNN. Am folosit un model secvential simplu (sau Transfer Learning cu MobileNet). Momentan, modelul este doar compilat (adica structura e gata), dar "creierul" lui este inca neantrenat (weights sunt random). Poate fi incarcat si rulat, dar va da raspunsuri la ghici pana in Etapa 5.
+Modul 3: Web Service / UI
+
+Locatie: src/app/main.py Este interfata grafica a aplicatiei. Am facut o fereastra simpla care:
+
+    Arata fluxul video live.
+
+    Suprapune rezultatul predicitiei (Scris cu Verde sau Rosu).
+
+    Are un buton de Start/Stop.
+
+Structura Repository-ului la Finalul Etapei 4
+
+ErgoVision-AI/
+├── data/
+│   ├── raw/           # Pozele originale (si cele de pe net, si ale mele)
+│   ├── processed/     # Pozele redimensionate (din Etapa 3)
+│   ├── train/
+│   ├── validation/
+│   └── test/
+├── src/
+│   ├── data_acquisition/  # Scripturile de facut poze (Modul 1)
+│   ├── preprocessing/     # Scripturile de curatare (Etapa 3)
+│   ├── neural_network/    # Definitia modelului CNN (Modul 2)
+│   └── app/               # Interfata grafica (Modul 3)
+├── docs/
+│   ├── state_machine.png  # Diagrama obligatorie
+│   └── screenshots/       # Poze cu aplicatia mergand
+├── models/                # Aici se va salva fisierul .h5
+├── README.md              # Acest fisier
+└── requirements.txt       # Librariile necesare
+
+Checklist Final (Stare Proiect)
+
+    [x] Tabelul Nevoie -> Solutie completat mai sus.
+
+    [x] Am contribuit cu peste 40% date proprii (poze facute de mine).
+
+    [x] Diagrama State Machine este in folderul docs.
+
+    [x] Codul ruleaza fara erori (chiar daca predictia nu e inca perfecta).
+
+    [x] Repository-ul este organizat corect.
